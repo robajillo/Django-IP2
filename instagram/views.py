@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect,get_object_or_404
 from . models import Post
 from django.contrib.auth.decorators import login_required
 from .models import Post, Comment, Profile, Follow
@@ -68,4 +68,4 @@ def user_profile(request, username):
         else:
             follow_status = False
     
-    return render(request, 'instagram/user_profile.html')
+    return render(request, 'userprofile.html')
