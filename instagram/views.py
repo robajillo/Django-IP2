@@ -3,7 +3,7 @@ from . models import Post
 from django.contrib.auth.decorators import login_required
 from .models import Post, Comment, Profile, Follow
 from django.contrib.auth.models import User
-from .forms import SignUpForm
+from .forms import SignUpForm,PostForm
 from django.contrib.auth import login, authenticate
 
 def signup(request):
@@ -34,4 +34,4 @@ def index(request):
     else:
         form = PostForm()
     
-    return render(request, 'instagram/index.html')
+    return render(request, 'index.html')
