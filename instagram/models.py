@@ -31,3 +31,10 @@ class Comment(models.Model):
 
     def __str__(self):
         return f'{self.user.name} Post'
+
+class Follow(models.Model):
+    follower = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='following')
+    followed = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='followers')
+
+    def __str__(self):
+        return f'{self.follower} Follow'
