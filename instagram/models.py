@@ -4,7 +4,9 @@ from django.utils import timezone
 
 class Post(models.Model):
     image = models.ImageField(blank=True,null=True)
-    author = models.ForeignKey('auth.User',on_delete = models.CASCADE)
-    caption = models.TextField()
+    user = models.ForeignKey('Profile',on_delete = models.CASCADE,related_name='posts')
+    caption = models.CharField(max_length=250, blank=True)
+    name = models.CharField(max_length=250, blank=True)
     created_date = models.DateTimeField(default=timezone.now)
+    likes = models.ManyToManyField(User, related_name='likes', blank=True, )
     
