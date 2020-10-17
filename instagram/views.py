@@ -5,6 +5,7 @@ from .models import Post, Comment, Profile, Follow
 from django.contrib.auth.models import User
 from .forms import SignUpForm,PostForm
 from django.contrib.auth import login, authenticate
+from django.http import HttpResponseRedirect, JsonResponse
 
 def signup(request):
     if request.method == 'POST':
