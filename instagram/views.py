@@ -52,3 +52,20 @@ def profile(request, username):
         profile_form = UpdateUserProfileForm(instance=request.user.profile)
     
     return render(request, 'profile.html')
+
+@login_required(login_url='login')
+def user_profile(request, username):
+    user_prof = get_object_or_404(User, username=username)
+    if request.user == user_prof:
+        return redirect('profile', username=request.user.username)
+    user_posts = user_prof.profile.posts.all()
+    
+    followers = Follow.objects.filter(followed=user_prof.profile)
+    follow_status = None
+    for follower in followers:
+        if request.user.profile == follower.follower:
+            follow_status = True
+        else:
+            follow_status = False
+    
+    return render(request, 'instagram/user_profile.html')
