@@ -69,3 +69,15 @@ def user_profile(request, username):
             follow_status = False
     
     return render(request, 'userprofile.html')
+
+@login_required(login_url='login')
+def search_profile(request):
+    if 'search_user' in request.GET and request.GET['search_user']:
+        name = request.GET.get("search_user")
+        results = Profile.search_profile(name)
+        message = f'name'
+        
+        return render(request, 'search.html')
+    else:
+        message = "You haven't searched for any image category"
+    return render(request, 'search.html', {'message': message})
