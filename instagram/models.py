@@ -4,22 +4,22 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 
 class Post(models.Model):
-    image = models.ImageField(blank=True,null=True)
-    user = models.ForeignKey('Profile',on_delete = models.CASCADE,related_name='posts')
-    caption = models.CharField(max_length=250, blank=True)
-    name = models.CharField(max_length=250, blank=True)
+    image = models.ImageField(upload_to='images/')
+    user = models.ForeignKey('Profile', on_delete = models.CASCADE,default='')
+    caption = models.CharField(max_length=250)
+    name = models.CharField(max_length=250, default='')
     created_date = models.DateTimeField(default=timezone.now)
-    likes = models.ManyToManyField(User, related_name='likes', blank=True, )
+    likes = models.ManyToManyField(User, related_name='likes' )
 
     def __str__(self):
         return f'{self.user.name} Post'
     
 class Profile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
-    profile_picture = models.ImageField(blank=True,null=True)
-    bio = models.TextField(max_length=500, default="My Bio", blank=True)
-    name = models.CharField(blank=True, max_length=120)
-    location = models.CharField(max_length=60, blank=True)
+    user =models.CharField(max_length=255)
+    profile_picture = models.ImageField(upload_to='images/')
+    bio = models.TextField(max_length=500, default="My Bio")
+    name = models.CharField( max_length=120)
+    location = models.CharField(max_length=60)
 
     def __str__(self):
         return f'{self.user.username} Profile'
