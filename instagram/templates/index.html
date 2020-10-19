@@ -50,7 +50,7 @@
                 </div>
                 <div class="iconic ml-2">
                     <button class="btn btn-sm" type="submit" name="image_id" value="{{image.id}}">
-                        <a href=""><i class="far fa-heart hearticon mx-auto"
+                        <a href="{% url 'likePost' image.id %}"><i class="far fa-heart hearticon mx-auto"
                                                                   aria-hidden="true" ></i></a>
                     </button>
                     <button class="btn btn-sm" type="submit"><a href=""><i
