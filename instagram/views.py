@@ -104,3 +104,27 @@ def like(request,post_id):
     post.save() 
     
     return HttpResponseRedirect(reverse('index'))       
+
+@login_required(login_url='login')
+def post_comment(request,image_id):
+    current_user=request.user
+    post = Post.objects.all()
+    profile_user = User.objects.get(username=current_user)
+    comments = Comments.objects.all()
+    print(comments)
+    if request.method == 'POST':
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.image = image
+            comment.comment_user = current_user
+            comment.save()
+
+            print(comments)
+
+
+        return redirect('index')
+    else:
+        form = CommentForm()
+
+    return HttpResponseRedirect(reverse('index'))
