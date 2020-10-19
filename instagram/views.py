@@ -110,13 +110,13 @@ def post_comment(request,image_id):
     current_user=request.user
     post = Post.objects.all()
     profile_user = User.objects.get(username=current_user)
-    comments = Comments.objects.all()
+    comments = Comment.objects.all()
     print(comments)
     if request.method == 'POST':
         form = CommentForm(request.POST)
         if form.is_valid():
             comment = form.save(commit=False)
-            comment.image = image
+            comment.post = post
             comment.comment_user = current_user
             comment.save()
 
