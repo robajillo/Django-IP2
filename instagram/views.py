@@ -1,11 +1,26 @@
 from django.shortcuts import render, redirect,get_object_or_404
-from . models import Post
+from . models import *
 from django.contrib.auth.decorators import login_required
 from .models import Post, Comment, Profile, Follow
 from django.contrib.auth.models import User
 from .forms import SignUpForm,PostForm,UpdateUserForm, UpdateUserProfileForm
 from django.contrib.auth import login, authenticate
+from django.http import HttpResponseRedirect, JsonResponse,HttpResponse, Http404
+from django.conf import settings 
+
+
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponseRedirect, JsonResponse
+from django.contrib.auth.decorators import login_required
+from .forms import *
+from django.contrib.auth import login, authenticate
+from .models import Post, Comment, Profile, Follow
+from django.contrib.auth.models import User
+from django.template.loader import render_to_string
+from django.views.generic import RedirectView
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import authentication, permissions
 
 def signup(request):
     if request.method == 'POST':
@@ -21,21 +36,16 @@ def signup(request):
         form = SignUpForm()
     return render(request, 'registration/signup.html', {'form': form})
 
-@login_required(login_url='login')
+
 def index(request):
-    images = Post.objects.all()
-    users = User.objects.exclude(id=request.user.id)
-    if request.method == 'POST':
-        form = PostForm(request.POST, request.FILES)
-        if form.is_valid():
-            post = form.save(commit=False)
-            post.user = request.user.profile
-            post.save()
-            return HttpResponseRedirect(request.path_info)
-    else:
-        form = PostForm()
-    
-    return render(request, 'index.html')
+    try:        
+        post = Post.objects.all()
+        users = User.objects.exclude(id=request.user.id)
+        
+    except DoesNotExist:
+        raise Http404()
+    return render(request,'index.html',{'post':post, 'users':users})
+
 
 @login_required(login_url='login')
 def profile(request, username):
