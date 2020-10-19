@@ -7,20 +7,9 @@ from .forms import SignUpForm,PostForm,UpdateUserForm, UpdateUserProfileForm
 from django.contrib.auth import login, authenticate
 from django.http import HttpResponseRedirect, JsonResponse,HttpResponse, Http404
 from django.conf import settings 
+from .email import send_welcome_email
 
 
-from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpResponseRedirect, JsonResponse
-from django.contrib.auth.decorators import login_required
-from .forms import *
-from django.contrib.auth import login, authenticate
-from .models import Post, Comment, Profile, Follow
-from django.contrib.auth.models import User
-from django.template.loader import render_to_string
-from django.views.generic import RedirectView
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import authentication, permissions
 
 def signup(request):
     if request.method == 'POST':
@@ -91,4 +80,5 @@ def search_profile(request):
     else:
         message = "You haven't searched for any image category"
     return render(request, 'search.html', {'message': message})
+
 
