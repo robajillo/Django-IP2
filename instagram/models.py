@@ -5,17 +5,17 @@ from django.contrib.auth.models import User
 from django_currentuser.db.models import CurrentUserField
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-
+import uuid
 
 
 class Post(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+   
     image = models.ImageField(upload_to='posts/')
     user = models.ForeignKey('Profile', on_delete = models.CASCADE,default='',related_name='posts')
     caption = models.CharField(max_length=250)
     name = models.CharField(max_length=250, default='')
     created_date = models.DateTimeField(default=timezone.now)
-    likes = models.ManyToManyField(User, related_name='likes',blank=True )
+    likes = models.IntegerField(default=0)
 
 
     class Meta:
@@ -49,20 +49,14 @@ class Profile(models.Model):
     location = models.CharField(max_length=60)
 
     def __str__(self):
-        return f'{self.user} Profile'
-
-    @receiver(post_save, sender=User)
-    def create_user_profile(self,sender, instance, created, **kwargs):
-        if created:
-            Profile.objects.create(user=instance)
-
-    @receiver(post_save, sender=User)
-    def save_user_profile(self,sender, instance, **kwargs):
-        instance.profile.save()
-
-    def save_profile(self):
-        self.user
-
+        return self.bio
+    
+    def save_image(self):
+        self.save()
+        
+    def delete_image(self):
+        self.delete()
+    
     def delete_profile(self):
         self.delete()
 

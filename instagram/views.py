@@ -103,4 +103,4 @@ def like(request,post_id):
     post.likes = current_likes
     post.save() 
     
-    return HttpResponseRedirect(reverse('index',args=[post_id]))       
+    return HttpResponseRedirect(reverse('index'))       
