@@ -8,6 +8,7 @@ from django.contrib.auth import login, authenticate
 from django.http import HttpResponseRedirect, JsonResponse,HttpResponse, Http404
 from django.conf import settings 
 from .email import send_welcome_email
+from django.urls import reverse
 
 
 
@@ -82,3 +83,24 @@ def search_profile(request):
     return render(request, 'search.html', {'message': message})
 
 
+@login_required
+def like(request,post_id):
+    user = request.user
+    post = Post.objects.get(id=post_id)
+    current_likes = post.likes
+    
+    liked = Likes.objects.filter(user=user, post=post).count()
+    
+    if not liked:
+        like = Likes.objects.create(user=user,post=post)
+        
+        current_likes = current_likes + 1
+        
+    else:
+        Likes.objects.filter(user=user,post=post).delete()
+        current_likes = current_likes - 1
+        
+    post.likes = current_likes
+    post.save() 
+    
+    return HttpResponseRedirect(reverse('index',args=[post_id]))       
