@@ -30,3 +30,13 @@ class UpdateUserProfileForm(forms.ModelForm):
 class NewsLetterForm(forms.Form):
     your_name = forms.CharField(label='First Name',max_length=30)
     email = forms.EmailField(label='Email')
+
+class CommentForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['comment'].widget = forms.TextInput()
+        self.fields['comment'].widget.attrs['placeholder'] = 'Add a comment...'
+
+    class Meta:
+        model = Comment
+        fields = ('comment',)

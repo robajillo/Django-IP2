@@ -45,18 +45,21 @@
                 <div class="card-body mb-4">
                     <a href=""><div class="card-text">
                     
-                        <img src="{{image.user.image.url}}"  class="card-img"width="100%">
+                        <img src="{{image.image.url}}"  class="card-img"width="1%"height="1%">
                     </div></a>
                 </div>
                 <div class="iconic ml-2">
                     <button class="btn btn-sm" type="submit" name="image_id" value="{{image.id}}">
                         <a href="{% url 'likePost' image.id %}"><i class="far fa-heart hearticon mx-auto"
-                                                                  aria-hidden="true" ></i></a>
+                                                                  aria-hidden="true" ></i>&nbsp;&nbsp;{{image.likes}}&nbsp;likes</a>
                     </button>
+                    
                     <button class="btn btn-sm" type="submit"><a href=""><i
                             class="far fa-comment hearticon mx-auto" aria-hidden="true"></i>
                     </a></button>
+                    
                 </div>
+
                 <span class="ml-4 mb-1"><strong></strong></span>
                 <span class="text-secondary ml-4 viewall"><a href="">view all</a></span>
                 <div class="allcomments mb-4">
