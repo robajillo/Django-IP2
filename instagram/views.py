@@ -3,7 +3,7 @@ from . models import *
 from django.contrib.auth.decorators import login_required
 from .models import Post, Comment, Profile, Follow
 from django.contrib.auth.models import User
-from .forms import SignUpForm,PostForm,UpdateUserForm, UpdateUserProfileForm
+from .forms import SignUpForm,PostForm,UpdateUserForm, UpdateUserProfileForm, CommentForm
 from django.contrib.auth import login, authenticate
 from django.http import HttpResponseRedirect, JsonResponse,HttpResponse, Http404
 from django.conf import settings 
