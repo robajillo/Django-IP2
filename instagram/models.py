@@ -9,6 +9,7 @@ from django.dispatch import receiver
 
 
 class Post(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     image = models.ImageField(upload_to='posts/')
     user = models.ForeignKey('Profile', on_delete = models.CASCADE,default='',related_name='posts')
     caption = models.CharField(max_length=250)
