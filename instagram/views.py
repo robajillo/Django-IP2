@@ -91,3 +91,4 @@ def search_profile(request):
     else:
         message = "You haven't searched for any image category"
     return render(request, 'search.html', {'message': message})
+
