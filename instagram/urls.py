@@ -10,6 +10,7 @@ urlpatterns = [
     path('profile/<username>/', views.profile, name='profile'),
     path('user_profile/<username>/', views.user_profile, name='user_profile'),
     path('<post_id>/like', views.like, name='likePost'),
+    path('post/<id>', views.post_comment, name='comment'),
 ]
 
 if settings.DEBUG:
