@@ -88,15 +88,15 @@
                 <div class="col-md-10">
                     <div class="card mt-4 mr-2 ml-2">
                         <div class="card-title text-secondary mt-2 mr-2 ml-2 ">Suggestions</div>
-                        {% for user in users %}
+                        {% for user in post %}
                         <div class="container">
                             <div class="row">
                                 <div class="col-md-2 mr-3 mt-1 mb-2">
-                                    <img class="rounded-circle" src="{{ user.profile.profile_picture.url }}"
+                                    <img class="rounded-circle" src="{{ user.user.profile_picture.url }}"
                                          width="45px" height="45px">
                                 </div>
                                 <div class="col-md-6 mr-2 mt-2">
-                                    <span><a href="{% url 'user_profile' user.username  %}">{{user.username}}</a></span>
+                                    <span><a href="{% url 'user_profile' user.id  %}">{{user.username}}</a></span>
                                 </div>
                                 <div class="col-md-4">
                                 </div>
