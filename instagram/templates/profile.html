@@ -21,12 +21,12 @@
                                 <span class="mr-5"><strong>{{images.count}}</strong> Posts</span>
                                 <span class="mr-5"> <strong>{{ user.profile.followers.count }}</strong> followers</span>
                                 <span class="mr-5"> <strong>{{ user.profile.following.count }}</strong> following</span>
-                                {% if follow_status %}
-                                <a class="btn btn-sm btn-outline-danger mr-5" href="{% url 'unfollow' user.profile.id %}">Unfollow</a>
-
-                                {%else%}
-
-                                <a class="btn btn-sm btn-primary mr-5" href="{% url 'follow' user.profile.id %}">Follow</a>
+                                
+                                <span class="mr-5"><strong>{{ profile.user.email }}</strong>
+                                {%if follow_status == True %}
+                                <a class="btn btn-sm btn-danger mr-5" href="{% url 'follow' user.profile 0 %}">Unfollow</a>
+                                {% else %}
+                                <a class="btn btn-sm btn-success mr-5" href="{% url 'follow' user.profile 1 %}">Follow</a>
                                 {% endif %}
                             </div>
                             <h5>{{ user.profile.name }}</h5>

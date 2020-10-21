@@ -8,10 +8,39 @@ from django.dispatch import receiver
 import uuid
 
 
+class Profile(models.Model):
+    user =models.OneToOneField(User, on_delete=models.CASCADE,related_name='profile')
+    profile_picture = models.ImageField(upload_to='images/')
+    bio = models.TextField(max_length=500)
+    name = models.CharField( max_length=120)
+    location = models.CharField(max_length=60)
+
+    
+    
+    
+
+    def save_image(self):
+        self.save()
+
+    def save_profile(self):
+        self.save()
+        
+    def delete_image(self):
+        self.delete()
+    
+    def delete_profile(self):
+        self.delete()
+
+    @classmethod
+    def search_profile(cls, name):
+        return cls.objects.filter(user__username__icontains=name).all()
+
+
 class Post(models.Model):
    
     image = models.ImageField(upload_to='posts/')
-    user = models.ForeignKey('Profile', on_delete = models.CASCADE,default='',related_name='posts')
+    user = models.ForeignKey(User, on_delete = models.CASCADE,default='',related_name='user_post')
+    profile = models.ForeignKey('Profile', on_delete = models.CASCADE,default='',related_name='user_profile')
     caption = models.CharField(max_length=250)
     name = models.CharField(max_length=250, default='')
     created_date = models.DateTimeField(default=timezone.now)
@@ -37,77 +66,40 @@ class Post(models.Model):
     def delete_image(self):
         self.delete()
 
-    def total_likes(self):
-        return self.likes.count()
-
+    
     def __str__(self):
-        return f'{self.user.name} Post'
+        return self.caption
 
 
-class Profile(models.Model):
-    user =models.OneToOneField(User, on_delete=models.CASCADE,related_name='profile')
-    profile_picture = models.ImageField(upload_to='images/')
-    bio = models.TextField(max_length=500)
-    name = models.CharField( max_length=120)
-    location = models.CharField(max_length=60)
-
-    def __str__(self):
-        return self.bio
-    
-    @receiver(post_save, sender=User)
-    def create_user_profile(sender, instance, created, **kwargs):
-        if created:
-            Profile.objects.create(user=instance)
-
-    @receiver(post_save, sender=User)
-    def save_user_profile(sender, instance, **kwargs):
-        instance.profile.save()
-
-    def save_image(self):
-        self.save()
-
-    def save_profile(self):
-        self.save()
-        
-    def delete_image(self):
-        self.delete()
-    
-    def delete_profile(self):
-        self.delete()
-
-    @classmethod
-    def search_profile(cls, name):
-        return cls.objects.filter(user__username__icontains=name).all()
-class Comment(models.Model):
-    comment = models.TextField()
-    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
-    user = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='comments')
-    created_date = models.DateTimeField(default=timezone.now)
-
-    def __str__(self):
-        return self.comment
-    
-    def save_comments(self):
-        self.save()
-
-    
-    def delete_comment(self):
-        self.delete()
-
-    @classmethod
-    def get_comments(cls, id):
-        comment = cls.objects.filter(id=id).all()
-        return comment
 
 class Follow(models.Model):
-    follower = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='following')
-    followed = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='followers')
-
-    def __str__(self):
-        return f'{self.follower} Follow'
-
+    follower = models.ForeignKey(User, on_delete=models.CASCADE, related_name='follower',default='')
+    following = models.ForeignKey(User, on_delete=models.CASCADE, related_name='following',default='')
 
 class Likes(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_like')
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='post_likes')
 
+class Stream(models.Model):
+    following = models.ForeignKey(User, on_delete=models.CASCADE, related_name='stream_following',default='')
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    date = models.DateTimeField()
+    
+    def add_post(sender,instance,*args,**kwargs):
+        post = instance
+        user = post.user
+        followers = Follow.objects.all().filter(following=user)
+        
+        for follower in followers:
+            stream = Stream(post=post, user=follower.follower, date=post.date, following=user)
+            stream.save()
+
+class Comment(models.Model):
+    comment = models.TextField(null=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_comment')
+    created_date = models.DateTimeField(default=timezone.now)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='post_comment')
+            
+post_save.connect(Stream.add_post, sender=Post)
+    

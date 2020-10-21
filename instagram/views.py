@@ -9,7 +9,7 @@ from django.http import HttpResponseRedirect, JsonResponse,HttpResponse, Http404
 from django.conf import settings 
 from .email import send_welcome_email
 from django.urls import reverse
-
+from django.db import transaction
 
 
 def signup(request):
@@ -39,7 +39,8 @@ def index(request):
 
 @login_required(login_url='login')
 def profile(request, username):
-    images = request.user.profile.posts.all()
+    user=get_object_or_404(User,username=username)
+    post = Post.objects.filter(user=request.user)
     if request.method == 'POST':
         user_form = UpdateUserForm(request.POST, instance=request.user)
         prof_form = UpdateUserProfileForm(request.POST, request.FILES, instance=request.user.profile)
@@ -53,7 +54,8 @@ def profile(request, username):
     params = {
         'user_form': user_form,
         'prof_form': prof_form,
-        'images': images,
+        'post': post,
+        'user':user,
 
     }
     return render(request, 'profile.html', params)
@@ -75,28 +77,7 @@ def search_profile(request):
         message = "You haven't searched for any image category"
     return render(request, 'search.html', {'message': message})
 
-@login_required(login_url='login')
-def user_profile(request, username):
-    user_prof = get_object_or_404(User, username=username)
-    if request.user == user_prof:
-        return redirect('profile', username=request.user.username)
-    user_posts = user_prof.profile.posts.all()
-    
-    followers = Follow.objects.filter(followed=user_prof.profile)
-    follow_status = None
-    for follower in followers:
-        if request.user.profile == follower.follower:
-            follow_status = True
-        else:
-            follow_status = False
-    params = {
-        'user_prof': user_prof,
-        'user_posts': user_posts,
-        'followers': followers,
-        'follow_status': follow_status
-    }
-    print(followers)
-    return render(request, 'user_profile.html', params)
+
 
 
 @login_required
@@ -121,29 +102,25 @@ def like(request,post_id):
     
     return HttpResponseRedirect(reverse('index'))       
 
-@login_required(login_url='login')
-def post_comment(request,post_id):
-    current_user=request.user
-    post = Post.objects.get(id=post_id)
-    profile_user = User.objects.get(username=current_user)
-    comment = Comment.objects.all()
-    print(comment)
-    if request.method == 'POST':
+@login_required
+def single_post(request,post_id):
+    post = get_object_or_404(Post, id=post_id)
+    user = request.user
+    comments = Comment.objects.filter(post=post).order_by('-created_date')
+    
+    if request.method == "POST":
         form = CommentForm(request.POST)
         if form.is_valid():
-            comment = form.save(commit=False)
-            comment.post = post
-            comment.comment_user = current_user
-            comment.save()
-
-            print(comment)
-
-
-        return redirect('index')
-    else:
-        form = CommentForm()
-
-    return render(request, 'singlepost.html')
+            data = form.save(commit=False)
+            data.user = user
+            data.post = post
+            data.save()
+            return HttpResponseRedirect(reverse('singlePost', args=[post_id]))
+            
+        else:
+            form = CommentForm()
+    
+    return render(request, 'single_post.html', {'post':post, 'form':CommentForm, 'comments':comments})    
 
 def unfollow(request, to_unfollow):
     if request.method == 'GET':
@@ -153,13 +130,30 @@ def unfollow(request, to_unfollow):
         return redirect('user_profile', user_profile2.user.username)
 
 
-def follow(request, to_follow):
-    if request.method == 'GET':
-        user_profile3 = Profile.objects.get(pk=to_follow)
-        follow_s = Follow(follower=request.user.profile, followed=user_profile3)
-        follow_s.save()
-        print(follow_s)
-        return redirect('user_profile', user_profile3.user.username)
+@login_required
+def follow(request, username):
+    user = request.user
+    folllowing = get_object_or_404(User, username=username)
+    
+    try:
+        f, created = Follow.objects.get_or_create(follower=user, following=folllowing)
+        
+        if int(option) == 0:
+            f.delete()
+            Stream.objects.filter(following=folllowing, user=user).all().delete()
+            
+        else:
+            posts = Post.objects.all().filter(user=folllowing)[:10]
+            
+            with transaction.atomic():
+                for post in posts:
+                    stream = Stream(post=post, user=user, date=post.date, following=folllowing)
+                    stream.save()
+                    
+        return HttpResponseRedirect(reverse('profile'))
+    except User.DoesNotExist:
+        return HttpResponseRedirect(reverse('profile'))      
+
 
 def login(request):
     username = request.POST['username']
