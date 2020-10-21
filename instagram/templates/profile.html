@@ -24,9 +24,9 @@
                                 
                                 <span class="mr-5"><strong>{{ profile.user.email }}</strong>
                                 {%if follow_status == True %}
-                                <a class="btn btn-sm btn-danger mr-5" href="{% url 'follow' user.profile 0 %}">Unfollow</a>
+                                <a class="btn btn-sm btn-danger mr-5" href="">Unfollow</a>
                                 {% else %}
-                                <a class="btn btn-sm btn-success mr-5" href="{% url 'follow' user.profile 1 %}">Follow</a>
+                                <a class="btn btn-sm btn-success mr-5" href="">Follow</a>
                                 {% endif %}
                             </div>
                             <h5>{{ user.profile.name }}</h5>
