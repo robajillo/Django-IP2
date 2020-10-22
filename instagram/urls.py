@@ -10,6 +10,8 @@ urlpatterns = [
     path('search/', views.search_profile, name='search'),
     path('profile/<username>/follow/', views.follow, name='follow'),
     path('profile/<username>/', views.profile, name='profile'),
+    path('logout/', views.logout, name='logout'),
+    path('accounts/login', views.login, name='login'),
 ]
 
 if settings.DEBUG:
