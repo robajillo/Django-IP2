@@ -13,6 +13,21 @@ from django.urls import reverse
 from django.db import transaction
 
 
+def login(request):
+    username = request.POST['username']
+    password = request.POST['password']
+    user = authenticate(request, username=username, password=password)
+    if user is not None:
+        login(request, user)
+        return redirect(request,'/')
+    
+    return render(request, '/django_registration/login.html')
+        
+@login_required
+def logout(request):
+    django_logout(request)
+    return  HttpResponseRedirect('/')
+
 def index(request):
     try:        
         post = Post.objects.all()
@@ -141,18 +156,5 @@ def follow(request, username):
         return HttpResponseRedirect(reverse('profile'))      
 
 
-def login(request):
-    username = request.POST['username']
-    password = request.POST['password']
-    user = authenticate(request, username=username, password=password)
-    if user is not None:
-        login(request, user)
-        return redirect(request,'/')
-    
-    return render(request, '/django_registration/login.html')
-        
-@login_required
-def logout(request):
-    django_logout(request)
-    return  HttpResponseRedirect('/')
+
 
