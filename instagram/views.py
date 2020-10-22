@@ -26,7 +26,7 @@ def login(request):
 @login_required
 def logout(request):
     django_logout(request)
-    return  HttpResponseRedirect('/')
+    return  HttpResponseRedirect('index')
 
 def index(request):
     try:        
