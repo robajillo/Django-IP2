@@ -13,21 +13,21 @@ from django.urls import reverse
 from django.db import transaction
 
 
-def login(request):
-    username = request.POST['username']
-    password = request.POST['password']
-    user = authenticate(request, username=username, password=password)
-    if user is not None:
-        login(request, user)
-        return redirect(request,'/')
-    
-    return render(request, '/django_registration/login.html')
-        
-@login_required
-def logout(request):
-    django_logout(request)
-    return  HttpResponseRedirect('index')
+def signup(request):
+    if request.method == 'POST':
+        form = SignupForm(request.POST)
+        if form.is_valid():
+            form.save()
+            username = form.cleaned_data.get('username')
+            raw_password = form.cleaned_data.get('password1')
+            user = authenticate(username=username, password=raw_password)
+            login(request, user)
+            return redirect('index')
+    else:
+        form = SignupForm()
+    return render(request, 'registration/signup.html', {'form': form})
 
+    
 def index(request):
     try:        
         post = Post.objects.all()
